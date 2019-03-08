@@ -30,7 +30,7 @@ function getDomain(host) {
 
 browser.proxy.onRequest.addListener(async request => {
 	
-	const profileId = (await browser.tabs.get(request.tabId)).incognito ? privateProfileId : defaultProfileId;
+	const profileId = (request.tabId || (await browser.tabs.get(request.tabId)).incognito) ? privateProfileId : defaultProfileId;
 	
 	let url = request.documentUrl ? request.documentUrl : request.url;
 	let host = getDomain(new URL(url).hostname);
