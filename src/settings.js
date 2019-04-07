@@ -1,14 +1,23 @@
-const hostField = document.getElementById("host");
-const portField = document.getElementById("port");
+const fields = {
+	host:		document.getElementById("host"),
+	port:		document.getElementById("port"),
+	exceptions:	document.getElementById("exceptions")
+};
 
 (async () => {
-	hostField.value = (await browser.storage.local.get("host")).host;
-	portField.value = (await browser.storage.local.get("port")).port;
+	const values = await browser.storage.local.get(Object.keys(fields));
+
+	for(const field in fields) {
+		fields[field].value = values[field] ? values[field] : "";
+	}
 })();
 
 document.getElementById("save").onclick = () => {
-	browser.storage.local.set({
-		"host": hostField.value,
-		"port": portField.value
-	});
+
+	let map = {};
+	for(const field in fields) {
+		map[field] = fields[field].value;
+	}
+
+	browser.storage.local.set(map);
 };

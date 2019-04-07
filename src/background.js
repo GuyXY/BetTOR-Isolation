@@ -28,6 +28,25 @@ function getDomain(host) {
 	return host;
 }
 
+function versionCompare(v1, v2) {
+
+    v1 = v1.split(".");
+    v2 = v2.split(".");
+
+    for(let i = 0; i < v1.length; ++i) {
+
+        const v1Part = stoi(v1[i]);
+        const v2Part = stoi(v2[i]);
+
+        if(v1Part < v2Part) {
+            return 1;
+        } else if(v1Part > v2Part) {
+            return -1;
+        }
+    }
+    return 0;
+}
+
 browser.proxy.onRequest.addListener(async request => {
 	
 	const profileId = (request.tabId == -1 || (await browser.tabs.get(request.tabId)).incognito) ? privateProfileId : defaultProfileId;
@@ -36,6 +55,11 @@ browser.proxy.onRequest.addListener(async request => {
 	let host = getDomain(new URL(url).hostname);
 
 	console.log(`${profileId} ${host}`); 
+
+	const exceptions = (await browser.storage.local.get("exceptions")).exceptions.split("\n");
+	if(exceptions.includes(host)) {
+		return [{"type": "direct"}];
+	}
 
 	return [{
 		"type": "socks",
@@ -48,11 +72,19 @@ browser.proxy.onRequest.addListener(async request => {
 
 }, {"urls": ["<all_urls>"]});
 
-(async () => {
-	if(!(await browser.storage.local.get("host")).host) {
-		browser.storage.local.set({
-			"host": "localhost",
-			"port": 9050
-		});
+browser.runtime.onInstalled.addListener(details => {
+	switch(details.reason) {
+		case "install":
+			browser.storage.local.set({
+				"host": "localhost",
+				"port": 9050,
+				"exceptions": "localhost"
+			});
+			break;
+		case "update":
+			if(versionCompare(details.previousVersion, "1.1.0") > 0) {
+				browser.storage.local.set({"exceptions": "localhost"});
+			}
+			break;
 	}
-})();
+});
