@@ -67,7 +67,7 @@ browser.proxy.onRequest.addListener(async request => {
 		"port": (await browser.storage.local.get("port")).port,
 		"username": profileId,
 		"password": host,
-		"proxyDNS": true
+		"proxyDNS": (await browser.storage.local.get("proxyDns")).proxyDns
 	}];
 
 }, {"urls": ["<all_urls>"]});
@@ -78,12 +78,16 @@ browser.runtime.onInstalled.addListener(details => {
 			browser.storage.local.set({
 				"host": "localhost",
 				"port": 9050,
-				"exceptions": "localhost"
+				"exceptions": "localhost",
+				"proxyDns": true
 			});
 			break;
 		case "update":
 			if(versionCompare(details.previousVersion, "1.1.0") > 0) {
 				browser.storage.local.set({"exceptions": "localhost"});
+			}
+			if(versionCompare(details.previousVersion, "1.2.0") > 0) {
+				browser.storage.local.set({"proxyDns": true});
 			}
 			break;
 	}
