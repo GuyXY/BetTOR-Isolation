@@ -28,6 +28,16 @@ function getDomain(host) {
 	return host;
 }
 
+//stoi converts a string to an integer
+function stoi(string) {
+    return string|0;
+}
+
+//versionCompare is a function that compares two strings of semantic versions
+//this function returns
+//-1 if v1 is newer
+//1 if v2 is newer
+//0 if both are the same
 function versionCompare(v1, v2) {
 
     v1 = v1.split(".");
@@ -72,7 +82,7 @@ browser.proxy.onRequest.addListener(async request => {
 
 }, {"urls": ["<all_urls>"]});
 
-browser.runtime.onInstalled.addListener(details => {
+browser.runtime.onInstalled.addListener(async details => {
 	switch(details.reason) {
 		case "install":
 			browser.storage.local.set({
@@ -83,11 +93,15 @@ browser.runtime.onInstalled.addListener(details => {
 			});
 			break;
 		case "update":
-			if(versionCompare(details.previousVersion, "1.1.0") > 0) {
-				browser.storage.local.set({"exceptions": "localhost"});
-			}
-			if(versionCompare(details.previousVersion, "1.2.0") > 0) {
-				browser.storage.local.set({"proxyDns": true});
+			if(versionCompare(details.previousVersion, "1.2.1") > 0) {
+				let exceptions = (await browser.storage.local.get("exceptions")).exceptions;
+				if(!exceptions.match(/.*(^|\n)localhost(\n|$).*/)) {
+					exceptions = `localhost\n${exceptions}`;
+				}
+				browser.storage.local.set({
+					"exceptions": exceptions,
+					"proxyDns": true
+				});
 			}
 			break;
 	}
