@@ -1,3 +1,7 @@
 input {
 	display: inline;
 }
+
+.warning {
+	color: red;
+}

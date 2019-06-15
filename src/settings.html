@@ -2,14 +2,16 @@
 <html>
 	<link rel="stylesheet" href="settings.css">
 	<body>
-		TOR-Server:
-		<br>
+		TOR-Server
 		<input id="host"></input>
-		<input type="number" id="port"></input>
-		<br>
-		Proxy DNS: <input type="checkbox" id="proxyDns"></input>
-		<br>ATTENTION disabling this may lead to dns leaks!<br><br>
-		<br>Exceptions:<br>
+		<input type="number" id="port"></input><br><br>
+		Proxy DNS <input type="checkbox" id="proxyDns"></input>
+		<div class="warning">WARNING: disabling dns proxying may lead to dns leaks!</div>
+		<div id="hsDnsLookupBlock">
+			Perform DNS lookups for hidden services <input type="checkbox" id="hsDnsLookup"></input>
+			<div class="warning">WARNING: performing dns lookups for hidden services may leak the name of the hidden service you're trying to access!</div>
+		</div>
+		<br>Domains that are not to be proxied through TOR<br>
 		<textarea id="exceptions"></textarea>
 		<br>
 		<input type="button" id="save" value="Save"></input>

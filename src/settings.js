@@ -2,8 +2,15 @@ const fields = {
 	host:		document.getElementById("host"),
 	port:		document.getElementById("port"),
 	exceptions:	document.getElementById("exceptions"),
-	proxyDns:	document.getElementById("proxyDns")
+	proxyDns:	document.getElementById("proxyDns"),
+	hsDnsLookup:	document.getElementById("hsDnsLookup")
 };
+
+let hsDnsLookupBlock = document.getElementById("hsDnsLookupBlock");
+
+function refreshHsDnsLookupBlockVisibility() {
+	hsDnsLookupBlock.style.display = fields.proxyDns.checked ? "none" : "block";
+}
 
 (async () => {
 	const values = await browser.storage.local.get(Object.keys(fields));
@@ -16,6 +23,10 @@ const fields = {
 			field.checked = values[fieldName];
 		}
 	}
+
+	refreshHsDnsLookupBlockVisibility();
+	fields.proxyDns.onclick = refreshHsDnsLookupBlockVisibility;
+
 })();
 
 document.getElementById("save").onclick = () => {

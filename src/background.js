@@ -71,13 +71,22 @@ browser.proxy.onRequest.addListener(async request => {
 		return [{"type": "direct"}];
 	}
 
+	let proxyDns;
+	if((await browser.storage.local.get("proxyDns")).proxyDns) {
+		proxyDns = true;
+	} else if(host.endsWith(".onion")) {
+		proxyDns = !(await browser.storage.local.get("hsDnsLookup")).hsDnsLookup;
+	} else {
+		proxyDns = false;
+	}
+
 	return [{
 		"type": "socks",
 		"host": (await browser.storage.local.get("host")).host,
 		"port": (await browser.storage.local.get("port")).port,
 		"username": profileId,
 		"password": host,
-		"proxyDNS": (await browser.storage.local.get("proxyDns")).proxyDns
+		"proxyDNS": proxyDns
 	}];
 
 }, {"urls": ["<all_urls>"]});
