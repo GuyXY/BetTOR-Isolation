@@ -15,18 +15,7 @@ function genProfileId() {
 const defaultProfileId = genProfileId();
 const privateProfileId = genProfileId();
 
-function getDomain(host) {
-	let c = 0;
-	for(let i = host.length - 1; i > 0; i--) {
-		if(host.charAt(i) == ".") {
-			c++;
-		}
-		if(c == 2) {
-			return host.substr(i + 1);
-		}
-	}
-	return host;
-}
+let domainCircuitMap = {};
 
 //stoi converts a string to an integer
 function stoi(string) {
@@ -62,7 +51,7 @@ browser.proxy.onRequest.addListener(async request => {
 	const profileId = (request.tabId == -1 || (await browser.tabs.get(request.tabId)).incognito) ? privateProfileId : defaultProfileId;
 	
 	let url = request.documentUrl ? request.documentUrl : request.url;
-	let host = getDomain(new URL(url).hostname);
+	let host = getDomain(url);
 
 	console.log(`${profileId} ${host}`); 
 
@@ -85,7 +74,7 @@ browser.proxy.onRequest.addListener(async request => {
 		"host": (await browser.storage.local.get("host")).host,
 		"port": (await browser.storage.local.get("port")).port,
 		"username": profileId,
-		"password": host,
+		"password": stoi(domainCircuitMap[host]) + " " + host,
 		"proxyDNS": proxyDns
 	}];
 
@@ -113,5 +102,13 @@ browser.runtime.onInstalled.addListener(async details => {
 				});
 			}
 			break;
+	}
+});
+
+browser.runtime.onMessage.addListener((message, sender) => {
+	switch(message.type) {
+		case "newCircuit":
+			let circuitNumber = stoi(domainCircuitMap[message.domain]);
+			domainCircuitMap[message.domain] = circuitNumber + 1;
 	}
 });
