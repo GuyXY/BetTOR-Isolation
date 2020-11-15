@@ -3,9 +3,11 @@ async function getDomainOfCurrentTab() {
 }
 
 (async function() {
-	let button = document.getElementsByTagName("button")[0];
-	button.innerText = "Use new circuit for " + await getDomainOfCurrentTab();
-	button.onclick = async () => {
-		browser.runtime.sendMessage({type: "newCircuit", domain: await getDomainOfCurrentTab()});
+	let domainInput = document.getElementById("domain");
+	let submitButton = document.getElementById("submit");
+	domainInput.value = await getDomainOfCurrentTab();
+	submitButton.onclick = () => {
+		browser.runtime.sendMessage({type: "newCircuit", domain: domainInput.value});
+		close();
 	}
 })();
