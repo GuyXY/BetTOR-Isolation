@@ -52,8 +52,9 @@ browser.proxy.onRequest.addListener(async request => {
 	
 	let url = request.documentUrl ? request.documentUrl : request.url;
 	let host = getDomain(url);
+	let circuitNumber = stoi(domainCircuitMap[host])
 
-	console.log(`${profileId} ${host}`); 
+	console.log(`${profileId} ${circuitNumber} ${host}`);
 
 	const exceptions = (await browser.storage.local.get("exceptions")).exceptions.split("\n");
 	if(exceptions.includes(host)) {
@@ -74,7 +75,7 @@ browser.proxy.onRequest.addListener(async request => {
 		"host": (await browser.storage.local.get("host")).host,
 		"port": (await browser.storage.local.get("port")).port,
 		"username": profileId,
-		"password": stoi(domainCircuitMap[host]) + " " + host,
+		"password": circuitNumber + " " + host,
 		"proxyDNS": proxyDns
 	}];
 
@@ -110,5 +111,6 @@ browser.runtime.onMessage.addListener((message, sender) => {
 		case "newCircuit":
 			let circuitNumber = stoi(domainCircuitMap[message.domain]);
 			domainCircuitMap[message.domain] = circuitNumber + 1;
+			browser.notifications.create({type: "basic", title: "Changed Circuit", message: "Changed circuit for " + message.domain + ".\nYou may want to reload the relevant tabs."});
 	}
 });

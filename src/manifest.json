@@ -11,6 +11,7 @@
 		"proxy",
 		"storage",
 		"tabs",
+		"notifications",
 		"<all_urls>"
 	],
 

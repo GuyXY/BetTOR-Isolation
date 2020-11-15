@@ -6,8 +6,8 @@ async function getDomainOfCurrentTab() {
 	let domainInput = document.getElementById("domain");
 	let submitButton = document.getElementById("submit");
 	domainInput.value = await getDomainOfCurrentTab();
-	submitButton.onclick = () => {
-		browser.runtime.sendMessage({type: "newCircuit", domain: domainInput.value});
+	submitButton.onclick = async () => {
+		await browser.runtime.sendMessage({type: "newCircuit", domain: domainInput.value});
 		close();
 	}
 })();
