@@ -16,6 +16,7 @@ const defaultProfileId = genProfileId();
 const privateProfileId = genProfileId();
 
 let domainCircuitMap = {};
+let tabHistory = {};
 
 //stoi converts a string to an integer
 function stoi(string) {
@@ -112,5 +113,33 @@ browser.runtime.onMessage.addListener((message, sender) => {
 			let circuitNumber = stoi(domainCircuitMap[message.domain]);
 			domainCircuitMap[message.domain] = circuitNumber + 1;
 			browser.notifications.create({type: "basic", title: "Changed Circuit", message: "Changed circuit for " + message.domain + ".\nYou may want to reload the relevant tabs."});
+			break;
+		case "getTabHistory":
+			return new Promise(resolve => {
+				let history = tabHistory[message.tabId];
+				if(!history) history = [];
+				resolve({history: history})
+			});
 	}
+});
+
+
+browser.tabs.onUpdated.addListener((tabId, changeInfo) => {
+
+	if(!changeInfo.url) return;
+
+	let history = tabHistory[tabId];
+	if(!history) {
+		history = [];
+		tabHistory[tabId] = history;
+	}
+
+	let domain = getDomain(changeInfo.url);
+	if(history[history.length - 1] != domain) {
+		history.push(domain);
+	}
+});
+
+browser.tabs.onRemoved.addListener(tabId => {
+	delete tabHistory[tabId];
 });

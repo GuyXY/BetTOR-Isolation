@@ -1,20 +1,23 @@
 <!DOCTYPE html>
 <html>
-	<link rel="stylesheet" href="settings.css">
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="settings.css">
+	</head>
 	<body>
 		TOR-Server
-		<input id="host"></input>
-		<input type="number" id="port"></input><br><br>
-		Proxy DNS <input type="checkbox" id="proxyDns"></input>
+		<input id="host">
+		<input type="number" id="port"><br><br>
+		Proxy DNS <input type="checkbox" id="proxyDns">
 		<div class="warning">WARNING: disabling dns proxying may lead to dns leaks!</div>
 		<div id="hsDnsLookupBlock">
-			Perform DNS lookups for hidden services <input type="checkbox" id="hsDnsLookup"></input>
+			Perform DNS lookups for hidden services <input type="checkbox" id="hsDnsLookup">
 			<div class="warning">WARNING: performing dns lookups for hidden services may leak the name of the hidden service you're trying to access!</div>
 		</div>
 		<br>Domains that are not to be proxied through TOR<br>
 		<textarea id="exceptions"></textarea>
 		<br>
-		<input type="button" id="save" value="Save"></input>
+		<input type="button" id="save" value="Save">
 		<script src="settings.js" id="port"></script>
 	</body>
 </html>
