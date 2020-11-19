@@ -13,7 +13,7 @@ async function getCurrentTab() {
 		domainSelect.add(option);
 	}
 
-	ubmitButton.onclick = async () => {
+	submitButton.onclick = async () => {
 		await browser.runtime.sendMessage({type: "newCircuit", domain: domainSelect.value});
 		close();
 	}
